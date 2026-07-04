@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { personalInfoSchema, type PersonalInfoInput } from "@/schemas/personal-info.schema";
@@ -17,14 +18,17 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 
-// interface-এ যোগ করুন
 interface PersonalInfoFormProps {
   resumeId: string;
   defaultValues: Omit<PersonalInfoInput, "resumeId">;
   onValuesChange: (values: Omit<PersonalInfoInput, "resumeId">) => void;
 }
 
-export function PersonalInfoForm({ resumeId, defaultValues }: PersonalInfoFormProps) {
+export function PersonalInfoForm({
+  resumeId,
+  defaultValues,
+  onValuesChange,
+}: PersonalInfoFormProps) {
   const form = useForm<PersonalInfoInput>({
     resolver: zodResolver(personalInfoSchema),
     defaultValues: { resumeId, ...defaultValues },
@@ -32,6 +36,23 @@ export function PersonalInfoForm({ resumeId, defaultValues }: PersonalInfoFormPr
   });
 
   const watchedValues = form.watch();
+
+  useEffect(() => {
+    onValuesChange(watchedValues);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [
+    watchedValues.fullName,
+    watchedValues.jobTitle,
+    watchedValues.email,
+    watchedValues.phone,
+    watchedValues.location,
+    watchedValues.website,
+    watchedValues.linkedin,
+    watchedValues.github,
+    watchedValues.portfolio,
+    watchedValues.summary,
+  ]);
+
   const autosaveStatus = useDebouncedAutosave(
     watchedValues,
     savePersonalInfo,
