@@ -135,3 +135,27 @@
   background-color: hsl(var(--muted-foreground) / 0.3);
   border-radius: 9999px;
 }
+.font-display {
+  font-family: var(--font-display), serif;
+}
+.font-mono-utility {
+  font-family: var(--font-mono-utility), monospace;
+}
+
+@keyframes scan-sweep {
+  0% {
+    transform: translateY(-120%);
+  }
+  100% {
+    transform: translateY(520%);
+  }
+}
+.animate-scan-sweep {
+  animation: scan-sweep 3s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-scan-sweep {
+    animation: none;
+  }
+}

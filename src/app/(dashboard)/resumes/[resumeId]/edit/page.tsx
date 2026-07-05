@@ -36,6 +36,7 @@ export default async function EditResumePage({ params }: EditResumePageProps) {
   return (
     <ResumeEditor
       resumeId={resume.id}
+      initialTemplateSlug={resume.templateSlug}
       initialPersonalInfo={{
         fullName: resume.personalInfo?.fullName ?? "",
         jobTitle: resume.personalInfo?.jobTitle ?? "",

@@ -158,3 +158,25 @@ export async function softDeleteResume(resumeId: string): Promise<ActionResult> 
   revalidatePath("/dashboard");
   return { success: true };
 }
+
+export async function updateResumeTemplate(
+  resumeId: string,
+  templateSlug: string
+): Promise<ActionResult> {
+  const userId = await requireUserId();
+
+  const resume = await prisma.resume.findFirst({
+    where: { id: resumeId, userId, deletedAt: null },
+  });
+  if (!resume) {
+    return { success: false, error: "Resume not found" };
+  }
+
+  await prisma.resume.update({
+    where: { id: resume.id },
+    data: { templateSlug },
+  });
+
+  revalidatePath(`/resumes/${resumeId}/edit`);
+  return { success: true };
+}
