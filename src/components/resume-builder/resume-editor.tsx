@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useState, useTransition, useEffect } from "react";
 import {
   ResizableHandle,
   ResizablePanel,
@@ -32,6 +32,7 @@ import type { SkillEntry } from "@/schemas/skill.schema";
 import type { ProjectEntry } from "@/schemas/project.schema";
 import type { CertificationEntry } from "@/schemas/certification.schema";
 import type { LanguageEntry } from "@/schemas/language.schema";
+import { DownloadPdfButton } from "@/components/resume-builder/download-pdf-button";
 
 interface ResumeEditorProps {
   resumeId: string;
@@ -66,6 +67,19 @@ export function ResumeEditor({
   const [certifications, setCertifications] = useState(initialCertifications);
   const [languages, setLanguages] = useState(initialLanguages);
 
+  // Responsive state logic to determine split orientation vs stacking
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    const checkViewport = () => {
+      // 1024px matches Tailwind's 'lg' breakpoint
+      setIsMobile(window.innerWidth < 1024);
+    };
+    checkViewport();
+    window.addEventListener("resize", checkViewport);
+    return () => window.removeEventListener("resize", checkViewport);
+  }, []);
+
   const handleTemplateChange = (newSlug: string) => {
     setTemplateSlug(newSlug);
     startTemplateTransition(() => {
@@ -75,121 +89,144 @@ export function ResumeEditor({
 
   return (
     <ResizablePanelGroup
-      direction="horizontal"
-      className="min-h-[calc(100vh-8rem)] rounded-lg border"
+      direction={isMobile ? "vertical" : "horizontal"}
+      className="min-h-[calc(100vh-8rem)] rounded-xl border shadow-sm transition-all duration-300 ease-in-out"
     >
-      <ResizablePanel defaultSize={50} minSize={35}>
-        <div className="h-full overflow-y-auto p-6">
-          <Tabs defaultValue="personal-info">
-            <TabsList className="mb-4 w-full justify-start overflow-x-auto">
-              <TabsTrigger value="personal-info" className="shrink-0">
-                Personal Info
-              </TabsTrigger>
-              <TabsTrigger value="experience" className="shrink-0">
-                Experience
-              </TabsTrigger>
-              <TabsTrigger value="education" className="shrink-0">
-                Education
-              </TabsTrigger>
-              <TabsTrigger value="skills" className="shrink-0">
-                Skills
-              </TabsTrigger>
-              <TabsTrigger value="projects" className="shrink-0">
-                Projects
-              </TabsTrigger>
-              <TabsTrigger value="certifications" className="shrink-0">
-                Certifications
-              </TabsTrigger>
-              <TabsTrigger value="languages" className="shrink-0">
-                Languages
-              </TabsTrigger>
-              <TabsTrigger value="analysis" className="shrink-0">
-                Analysis
-              </TabsTrigger>
+      {/* Editor Panel */}
+      <ResizablePanel 
+        defaultSize={isMobile ? 100 : 50} 
+        minSize={isMobile ? 0 : 35}
+        className="w-full transition-all duration-300"
+      >
+        <div className="h-full overflow-y-auto p-4 sm:p-6 lg:p-8 bg-background">
+          <Tabs defaultValue="personal-info" className="w-full">
+            <TabsList className="mb-6 w-full justify-start overflow-x-auto scrollbar-none flex gap-1 p-1 bg-muted/60 backdrop-blur-sm rounded-lg">
+              {[
+                { id: "personal-info", label: "Personal Info" },
+                { id: "experience", label: "Experience" },
+                { id: "education", label: "Education" },
+                { id: "skills", label: "Skills" },
+                { id: "projects", label: "Projects" },
+                { id: "certifications", label: "Certifications" },
+                { id: "languages", label: "Languages" },
+                { id: "analysis", label: "Analysis" },
+              ].map((tab) => (
+                <TabsTrigger
+                  key={tab.id}
+                  value={tab.id}
+                  className="shrink-0 rounded-md px-3 py-1.5 text-sm font-medium transition-all duration-200 ease-out hover:bg-background/80 hover:text-foreground data-[state=active]:bg-background data-[state=active]:text-foreground data-[state=active]:shadow-sm"
+                >
+                  {tab.label}
+                </TabsTrigger>
+              ))}
             </TabsList>
 
-            <TabsContent value="personal-info">
-              <PersonalInfoForm
-                resumeId={resumeId}
-                defaultValues={initialPersonalInfo}
-                onValuesChange={setPersonalInfo}
-              />
-            </TabsContent>
-            <TabsContent value="experience">
-              <ExperienceSectionForm
-                resumeId={resumeId}
-                defaultExperiences={initialExperiences}
-                onValuesChange={setExperiences}
-              />
-            </TabsContent>
-            <TabsContent value="education">
-              <EducationSectionForm
-                resumeId={resumeId}
-                defaultEducations={initialEducations}
-                onValuesChange={setEducations}
-              />
-            </TabsContent>
-            <TabsContent value="skills">
-              <SkillsSectionForm
-                resumeId={resumeId}
-                defaultSkills={initialSkills}
-                onValuesChange={setSkills}
-              />
-            </TabsContent>
-            <TabsContent value="projects">
-              <ProjectsSectionForm
-                resumeId={resumeId}
-                defaultProjects={initialProjects}
-                onValuesChange={setProjects}
-              />
-            </TabsContent>
-            <TabsContent value="certifications">
-              <CertificationsSectionForm
-                resumeId={resumeId}
-                defaultCertifications={initialCertifications}
-                onValuesChange={setCertifications}
-              />
-            </TabsContent>
-            <TabsContent value="languages">
-              <LanguagesSectionForm
-                resumeId={resumeId}
-                defaultLanguages={initialLanguages}
-                onValuesChange={setLanguages}
-              />
-            </TabsContent>
-            <TabsContent value="analysis">
-              <ResumeAnalysisPanel resumeId={resumeId} />
-            </TabsContent>
+            <div className="transition-all duration-300 ease-in-out">
+              <TabsContent value="personal-info" className="outline-none focus-visible:ring-0">
+                <PersonalInfoForm
+                  resumeId={resumeId}
+                  defaultValues={initialPersonalInfo}
+                  onValuesChange={setPersonalInfo}
+                />
+              </TabsContent>
+              <TabsContent value="experience" className="outline-none focus-visible:ring-0">
+                <ExperienceSectionForm
+                  resumeId={resumeId}
+                  defaultExperiences={initialExperiences}
+                  onValuesChange={setExperiences}
+                />
+              </TabsContent>
+              <TabsContent value="education" className="outline-none focus-visible:ring-0">
+                <EducationSectionForm
+                  resumeId={resumeId}
+                  defaultEducations={initialEducations}
+                  onValuesChange={setEducations}
+                />
+              </TabsContent>
+              <TabsContent value="skills" className="outline-none focus-visible:ring-0">
+                <SkillsSectionForm
+                  resumeId={resumeId}
+                  defaultSkills={initialSkills}
+                  onValuesChange={setSkills}
+                />
+              </TabsContent>
+              <TabsContent value="projects" className="outline-none focus-visible:ring-0">
+                <ProjectsSectionForm
+                  resumeId={resumeId}
+                  defaultProjects={initialProjects}
+                  onValuesChange={setProjects}
+                />
+              </TabsContent>
+              <TabsContent value="certifications" className="outline-none focus-visible:ring-0">
+                <CertificationsSectionForm
+                  resumeId={resumeId}
+                  defaultCertifications={initialCertifications}
+                  onValuesChange={setCertifications}
+                />
+              </TabsContent>
+              <TabsContent value="languages" className="outline-none focus-visible:ring-0">
+                <LanguagesSectionForm
+                  resumeId={resumeId}
+                  defaultLanguages={initialLanguages}
+                  onValuesChange={setLanguages}
+                />
+              </TabsContent>
+              <TabsContent value="analysis" className="outline-none focus-visible:ring-0">
+                <ResumeAnalysisPanel resumeId={resumeId} />
+              </TabsContent>
+            </div>
           </Tabs>
         </div>
       </ResizablePanel>
-      <ResizableHandle withHandle />
-      <ResizablePanel defaultSize={50} minSize={35}>
-        <div className="h-full overflow-y-auto bg-muted/30 p-6">
-          <div className="mx-auto mb-4 max-w-[600px]">
+
+      {/* Responsive Separator Handle */}
+      <ResizableHandle 
+        withHandle 
+        className={`bg-border/60 hover:bg-primary/40 transition-colors duration-200 ${isMobile ? "h-2 w-full cursor-row-resize" : "w-2 cursor-col-resize"}`} 
+      />
+
+      {/* Preview Panel */}
+      <ResizablePanel 
+        defaultSize={isMobile ? 100 : 50} 
+        minSize={isMobile ? 0 : 35}
+        className="w-full transition-all duration-300"
+      >
+        <div className="h-full overflow-y-auto bg-muted/20 p-4 sm:p-6 lg:p-8 border-t lg:border-t-0">
+          <div className="mx-auto mb-6 flex flex-col sm:flex-row max-w-[600px] items-start sm:items-center justify-between gap-4">
             <Select value={templateSlug} onValueChange={handleTemplateChange}>
-              <SelectTrigger className="w-48">
+              <SelectTrigger className="w-full sm:w-48 bg-background border-muted-foreground/20 shadow-sm transition-all duration-200 hover:border-primary/50 hover:bg-accent/10">
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
+              <SelectContent className="rounded-lg shadow-md">
                 {RESUME_TEMPLATES.map((template) => (
-                  <SelectItem key={template.slug} value={template.slug}>
+                  <SelectItem 
+                    key={template.slug} 
+                    value={template.slug}
+                    className="cursor-pointer transition-colors duration-150"
+                  >
                     {template.name}
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+
+            <div className="w-full sm:w-auto transition-transform duration-200 hover:scale-[1.02] active:scale-[0.98]">
+              <DownloadPdfButton resumeId={resumeId} />
+            </div>
           </div>
-          <LivePreview
-            templateSlug={templateSlug}
-            {...personalInfo}
-            experiences={experiences}
-            educations={educations}
-            skills={skills}
-            projects={projects}
-            certifications={certifications}
-            languages={languages}
-          />
+          
+          <div className="rounded-xl bg-background p-2 sm:p-4 shadow-sm border border-muted-foreground/10 transition-shadow duration-300 hover:shadow-md">
+            <LivePreview
+              templateSlug={templateSlug}
+              {...personalInfo}
+              experiences={experiences}
+              educations={educations}
+              skills={skills}
+              projects={projects}
+              certifications={certifications}
+              languages={languages}
+            />
+          </div>
         </div>
       </ResizablePanel>
     </ResizablePanelGroup>

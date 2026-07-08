@@ -2,25 +2,80 @@
 
 import { useState } from "react";
 import { Menu } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Sheet, SheetContent, SheetTrigger, SheetTitle } from "@/components/ui/sheet";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
+
+// Container staggering presets
+const contentContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.06, // Rapid cascade effect for inner items
+      delayChildren: 0.1, // Wait briefly for sheet slide animation to settle
+    },
+  },
+};
+
+// Item animation variant
+const itemVariants = {
+  hidden: { opacity: 0, x: -16 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 260,
+      damping: 24,
+    },
+  },
+};
 
 export function MobileSidebar() {
   const [isMobileNavOpen, setIsMobileNavOpen] = useState(false);
 
   return (
     <Sheet open={isMobileNavOpen} onOpenChange={setIsMobileNavOpen}>
+      {/* Trigger Button - Hidden above lg breakpoint */}
       <SheetTrigger asChild>
-        <Button variant="ghost" size="icon" className="lg:hidden">
+        <Button 
+          variant="ghost" 
+          size="icon" 
+          className="lg:hidden transition-transform duration-200 active:scale-95 transform-gpu"
+          aria-label="Open navigation menu"
+        >
           <Menu className="size-5" />
         </Button>
       </SheetTrigger>
-      <SheetContent side="left" className="w-64 p-0">
-        <SheetTitle className="border-b px-6 py-4 text-left text-lg font-semibold">
+
+      {/* Sheet Sliding Wrapper */}
+      <SheetContent side="left" className="w-64 p-0 overflow-hidden flex flex-col">
+        {/* Accessible Header Title */}
+        <SheetTitle className="border-b px-6 py-4 text-left text-lg font-semibold tracking-tight">
           ResumeForge
         </SheetTitle>
-        <SidebarNav />
+
+        {/* Animated Wrapper Container for Inner Nav Links */}
+        <AnimatePresence>
+          {isMobileNavOpen && (
+            <motion.div
+              variants={contentContainerVariants}
+              initial="hidden"
+              animate="visible"
+              className="flex-1 flex flex-col w-full transform-gpu"
+            >
+              {/* Animated Inner Navigation Structure */}
+              <motion.div variants={itemVariants} className="flex-1 w-full">
+                {/* Clicking links should close the drawer natively */}
+                <div onClick={() => setIsMobileNavOpen(false)} className="w-full h-full">
+                  <SidebarNav />
+                </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </SheetContent>
     </Sheet>
   );

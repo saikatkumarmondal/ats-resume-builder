@@ -19,9 +19,30 @@ interface LivePreviewProps extends ResumePreviewData {
   templateSlug?: string;
 }
 
-export function LivePreview({ templateSlug = "modern", ...data }: LivePreviewProps) {
+export function LivePreview({
+  templateSlug = "modern",
+  ...data
+}: LivePreviewProps) {
   const TemplateComponent =
-    TEMPLATE_COMPONENTS[templateSlug as keyof typeof TEMPLATE_COMPONENTS] ?? ModernTemplate;
+    TEMPLATE_COMPONENTS[
+      templateSlug as keyof typeof TEMPLATE_COMPONENTS
+    ] ?? ModernTemplate;
 
-  return <TemplateComponent data={data} />;
+  return (
+    <div
+      className="
+        w-full
+        overflow-hidden
+        rounded-xl
+        transition-all
+        duration-300
+        ease-out
+        motion-safe:animate-in
+        motion-safe:fade-in-0
+        motion-safe:zoom-in-[0.98]
+      "
+    >
+      <TemplateComponent data={data} />
+    </div>
+  );
 }

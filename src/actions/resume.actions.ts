@@ -180,3 +180,25 @@ export async function updateResumeTemplate(
   revalidatePath(`/resumes/${resumeId}/edit`);
   return { success: true };
 }
+export async function getResumeForPrint(resumeId: string) {
+  const userId = await requireUserId();
+
+  const resume = await prisma.resume.findFirst({
+    where: { id: resumeId, userId, deletedAt: null },
+    include: {
+      personalInfo: true,
+      experiences: { orderBy: { startDate: "desc" } },
+      educations: { orderBy: { startDate: "desc" } },
+      skills: true,
+      projects: true,
+      certifications: true,
+      languages: true,
+    },
+  });
+
+  if (!resume) {
+    return null;
+  }
+
+  return resume;
+}

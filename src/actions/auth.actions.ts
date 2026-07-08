@@ -1,9 +1,9 @@
 "use server";
 
 import bcrypt from "bcryptjs";
+import { Prisma } from "@prisma/client";
 import { signIn } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
-import { AuthError } from "next-auth";
 import {
   loginSchema,
   registerSchema,
@@ -15,25 +15,56 @@ import { signOut } from "@/lib/auth";
 
 type ActionResult = { success: true } | { success: false; error: string };
 
+function normalizeSignInResult(result: unknown) {
+  if (typeof result === "string") {
+    try {
+      const url = new URL(result, "http://localhost");
+      const error = url.searchParams.get("error");
+      if (error) {
+        return {
+          ok: false,
+          error: error === "CredentialsSignin" ? "Invalid email or password" : error,
+        };
+      }
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Invalid email or password" };
+    }
+  }
+
+  if (!result || typeof result !== "object") {
+    return { ok: false, error: "Invalid email or password" };
+  }
+
+  const authResult = result as { ok?: boolean; error?: string };
+  if (authResult.error) {
+    return {
+      ok: false,
+      error: authResult.error === "CredentialsSignin" ? "Invalid email or password" : authResult.error,
+    };
+  }
+
+  return { ok: authResult.ok ?? false, error: authResult.ok ? undefined : "Invalid email or password" };
+}
+
 export async function loginUser(input: LoginInput): Promise<ActionResult> {
   const parsed = loginSchema.safeParse(input);
   if (!parsed.success) {
     return { success: false, error: parsed.error.issues[0].message };
   }
 
-  try {
-    await signIn("credentials", {
-      email: parsed.data.email,
-      password: parsed.data.password,
-      redirect: false,
-    });
-    return { success: true };
-  } catch (error) {
-    if (error instanceof AuthError) {
-      return { success: false, error: "Invalid email or password" };
-    }
-    throw error;
+  const result = await signIn("credentials", {
+    email: parsed.data.email.toLowerCase().trim(),
+    password: parsed.data.password,
+    redirect: false,
+  });
+
+  const normalized = normalizeSignInResult(result);
+  if (!normalized.ok) {
+    return { success: false, error: normalized.error ?? "Invalid email or password" };
   }
+
+  return { success: true };
 }
 
 export async function registerUser(input: RegisterInput): Promise<ActionResult> {
@@ -43,9 +74,10 @@ export async function registerUser(input: RegisterInput): Promise<ActionResult> 
   }
 
   const { name, email, password } = parsed.data;
+  const normalizedEmail = email.toLowerCase().trim();
 
   const existingUser = await prisma.user.findUnique({
-    where: { email },
+    where: { email: normalizedEmail },
   });
 
   if (existingUser) {
@@ -54,27 +86,22 @@ export async function registerUser(input: RegisterInput): Promise<ActionResult> 
 
   const passwordHash = await bcrypt.hash(password, 10);
 
-  await prisma.user.create({
-    data: {
-      name,
-      email,
-      passwordHash,
-    },
-  });
-
   try {
-    await signIn("credentials", {
-      email,
-      password,
-      redirect: false,
+    await prisma.user.create({
+      data: {
+        name,
+        email: normalizedEmail,
+        passwordHash,
+      },
     });
-    return { success: true };
   } catch (error) {
-    if (error instanceof AuthError) {
-      return { success: false, error: "Registered, but sign-in failed. Please log in." };
+    if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002") {
+      return { success: false, error: "An account with this email already exists" };
     }
     throw error;
   }
+
+  return { success: true };
 }
 
 export async function logoutUser() {

@@ -21,15 +21,40 @@ export function SortableExperienceItem({
   isCurrent,
   onRemove,
 }: SortableExperienceItemProps) {
-  const { attributes, listeners, setNodeRef, transform, transition } = useSortable({ id });
+  const { 
+    attributes, 
+    listeners, 
+    setNodeRef, 
+    transform, 
+    transition,
+    isDragging 
+  } = useSortable({ id });
 
+  // Senior Performance Layer: Leveraging standard CSS values with a modern CSS translate string
+  // and triggering hardware acceleration via will-change when active.
   const style = {
     transform: CSS.Transform.toString(transform),
-    transition,
+    transition: transition || "transform 200ms cubic-bezier(0.2, 0, 0, 1)",
+    willChange: isDragging ? "transform, opacity" : "auto",
   };
 
   return (
-    <div ref={setNodeRef} style={style}>
+    <div 
+      ref={setNodeRef} 
+      style={style}
+      // Structural classes designed to enhance visibility during active state drag operations
+      className={`
+        w-full 
+        rounded-xl 
+        transition-shadow 
+        duration-300 
+        ease-out
+        ${isDragging 
+          ? "opacity-60 scale-[1.01] sm:scale-[1.02] shadow-xl ring-2 ring-primary/20 z-50 cursor-grabbing" 
+          : "opacity-100 scale-100 shadow-none"
+        }
+      `}
+    >
       <ExperienceEntryCard
         control={control}
         index={index}

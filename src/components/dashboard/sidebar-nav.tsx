@@ -2,35 +2,100 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import { SIDEBAR_NAV_ITEMS } from "@/config/navigation.config";
+
+// Container staggering orchestration configuration
+const navContainerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.04, // Snappy cascading mount sequence
+    },
+  },
+};
+
+// Item animation variant
+const navItemVariants = {
+  hidden: { opacity: 0, x: -8 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 240,
+      damping: 20,
+    },
+  },
+};
 
 export function SidebarNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="flex flex-col gap-1 p-3">
+    <motion.nav
+      variants={navContainerVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex flex-col gap-1 p-3 w-full"
+    >
       {SIDEBAR_NAV_ITEMS.map((item) => {
         const isActive =
           pathname === item.href || pathname.startsWith(`${item.href}/`);
         const Icon = item.icon;
 
         return (
-          <Link
+          <motion.div
             key={item.href}
-            href={item.href}
-            className={cn(
-              "flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors",
-              isActive
-                ? "bg-primary text-primary-foreground"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
+            variants={navItemVariants}
+            className="w-full relative"
           >
-            <Icon className="size-4 shrink-0" />
-            {item.label}
-          </Link>
+            <Link
+              href={item.href}
+              className={cn(
+                "group relative flex items-center gap-3 rounded-lg px-3 py-2.5 sm:py-2 text-sm font-medium transition-colors outline-none focus-visible:ring-2 focus-visible:ring-primary/20 dynamic-touch-target transform-gpu",
+                isActive
+                  ? "text-primary-foreground font-semibold"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              {/* Animated Shared Active Background Pill */}
+              {isActive && (
+                <motion.div
+                  layoutId="activeSidebarIndicator"
+                  className="absolute inset-0 bg-primary rounded-lg z-0"
+                  transition={{
+                    type: "spring",
+                    stiffness: 380,
+                    damping: 30,
+                  }}
+                />
+              )}
+
+              {/* Icon - Scaled on hover and isolated above active backdrop background */}
+              <motion.div
+                whileHover={{ scale: 1.1 }}
+                whileTap={{ scale: 0.95 }}
+                className="z-10 flex items-center justify-center shrink-0"
+              >
+                <Icon 
+                  className={cn(
+                    "size-4 transition-transform duration-200 group-hover:scale-105", 
+                    isActive ? "text-primary-foreground" : "text-muted-foreground group-hover:text-foreground"
+                  )} 
+                />
+              </motion.div>
+
+              {/* Menu Label Title Text */}
+              <span className="z-10 truncate tracking-tight">
+                {item.label}
+              </span>
+            </Link>
+          </motion.div>
         );
       })}
-    </nav>
+    </motion.nav>
   );
 }

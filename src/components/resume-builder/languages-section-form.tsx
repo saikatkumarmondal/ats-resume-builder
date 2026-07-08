@@ -13,7 +13,14 @@ import {
 import { saveLanguages } from "@/actions/language.actions";
 import { useDebouncedAutosave } from "@/hooks/use-debounced-autosave";
 import { AutosaveIndicator } from "@/components/resume-builder/autosave-indicator";
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import {
@@ -24,7 +31,10 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-const EMPTY_LANGUAGE: LanguageEntry = { name: "", proficiency: "Conversational" };
+const EMPTY_LANGUAGE: LanguageEntry = {
+  name: "",
+  proficiency: "Conversational",
+};
 
 interface LanguagesSectionFormProps {
   resumeId: string;
@@ -63,62 +73,107 @@ export function LanguagesSectionForm({
 
   return (
     <Form {...form}>
-      <form className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+      <form className="space-y-5 sm:space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
             Languages
           </h2>
-          <AutosaveIndicator status={autosaveStatus} />
+
+          <div className="self-start sm:self-auto transition-all duration-300 ease-out">
+            <AutosaveIndicator status={autosaveStatus} />
+          </div>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-4">
           {fields.map((field, index) => (
-            <div key={field.fieldKey} className="flex items-end gap-3">
-              <FormField
-                control={form.control}
-                name={`languages.${index}.name`}
-                render={({ field: inputField }) => (
-                  <FormItem className="flex-1">
-                    <FormLabel>Language</FormLabel>
-                    <FormControl>
-                      <Input placeholder="English" {...inputField} />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={form.control}
-                name={`languages.${index}.proficiency`}
-                render={({ field: inputField }) => (
-                  <FormItem className="w-40">
-                    <FormLabel>Proficiency</FormLabel>
-                    <Select onValueChange={inputField.onChange} value={inputField.value}>
+            <div
+              key={field.fieldKey}
+              className="
+                rounded-xl
+                border
+                p-4
+                transition-all
+                duration-300
+                ease-out
+                hover:-translate-y-0.5
+                hover:shadow-md
+              "
+            >
+              <div className="flex flex-col gap-4 md:flex-row md:items-end">
+                <FormField
+                  control={form.control}
+                  name={`languages.${index}.name`}
+                  render={({ field: inputField }) => (
+                    <FormItem className="flex-1">
+                      <FormLabel>Language</FormLabel>
+
                       <FormControl>
-                        <SelectTrigger className="w-full">
-                          <SelectValue />
-                        </SelectTrigger>
+                        <Input
+                          placeholder="English"
+                          className="transition-all duration-300 focus-visible:ring-2"
+                          {...inputField}
+                        />
                       </FormControl>
-                      <SelectContent>
-                        {proficiencyLevelOptions.map((level) => (
-                          <SelectItem key={level} value={level}>
-                            {level}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </FormItem>
-                )}
-              />
-              <Button
-                type="button"
-                variant="ghost"
-                size="icon"
-                className="text-destructive hover:text-destructive"
-                onClick={() => remove(index)}
-              >
-                <Trash2 className="size-4" />
-              </Button>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <FormField
+                  control={form.control}
+                  name={`languages.${index}.proficiency`}
+                  render={({ field: inputField }) => (
+                    <FormItem className="w-full md:w-52">
+                      <FormLabel>Proficiency</FormLabel>
+
+                      <Select
+                        onValueChange={inputField.onChange}
+                        value={inputField.value}
+                      >
+                        <FormControl>
+                          <SelectTrigger className="w-full transition-all duration-300">
+                            <SelectValue />
+                          </SelectTrigger>
+                        </FormControl>
+
+                        <SelectContent>
+                          {proficiencyLevelOptions.map((level) => (
+                            <SelectItem key={level} value={level}>
+                              {level}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+
+                <Button
+                  type="button"
+                  variant="ghost"
+                  size="icon"
+                  onClick={() => remove(index)}
+                  className="
+                    h-10
+                    w-10
+                    shrink-0
+                    self-end
+                    rounded-lg
+                    text-destructive
+                    transition-all
+                    duration-300
+                    hover:scale-110
+                    hover:bg-destructive/10
+                    hover:text-destructive
+                    active:scale-95
+                  "
+                >
+                  <Trash2 className="size-4 transition-transform duration-300" />
+                </Button>
+              </div>
             </div>
           ))}
         </div>
@@ -126,11 +181,26 @@ export function LanguagesSectionForm({
         <Button
           type="button"
           variant="outline"
-          className="w-full"
           onClick={() => append(EMPTY_LANGUAGE)}
+          className="
+            group
+            w-full
+            h-11
+            sm:h-12
+            rounded-xl
+            border-dashed
+            transition-all
+            duration-300
+            ease-out
+            hover:scale-[1.01]
+            hover:shadow-lg
+            active:scale-[0.98]
+            text-sm
+            sm:text-base
+          "
         >
-          <Plus className="mr-2 size-4" />
-          Add Language
+          <Plus className="mr-2 size-4 transition-transform duration-300 group-hover:rotate-90 group-hover:scale-110" />
+          <span>Add Language</span>
         </Button>
       </form>
     </Form>

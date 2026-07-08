@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import {
   Select,
   SelectContent,
@@ -15,15 +16,51 @@ interface AiAssistantWorkspaceProps {
   resumes: { id: string; title: string }[];
 }
 
+// Animation variants for the container orchestration
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15, // Smooth staggered entry for inner components
+    },
+  },
+};
+
+// Animation variants for individual components
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
+};
+
 export function AiAssistantWorkspace({ resumes }: AiAssistantWorkspaceProps) {
   const [selectedResumeId, setSelectedResumeId] = useState(resumes[0]?.id ?? "");
 
   return (
-    <div className="space-y-6">
-      <div className="max-w-xs space-y-1.5">
-        <label className="text-sm font-medium">Select resume</label>
+    <motion.div
+      className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6 md:space-y-8"
+      variants={containerVariants}
+      initial="hidden"
+      animate="visible"
+    >
+      {/* Resume Selector Section */}
+      <motion.div 
+        className="w-full max-w-xs space-y-1.5"
+        variants={itemVariants}
+      >
+        <label className="text-sm font-medium text-muted-foreground block">
+          Select resume
+        </label>
         <Select value={selectedResumeId} onValueChange={setSelectedResumeId}>
-          <SelectTrigger className="w-full">
+          <SelectTrigger className="w-full transition-all duration-200 hover:border-primary/50 focus:ring-2 focus:ring-primary/20">
             <SelectValue />
           </SelectTrigger>
           <SelectContent>
@@ -34,12 +71,34 @@ export function AiAssistantWorkspace({ resumes }: AiAssistantWorkspaceProps) {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </motion.div>
 
-      <div className="grid gap-6 lg:grid-cols-2">
-        <SkillsSuggestionTool resumeId={selectedResumeId} />
-        <GrammarFixTool resumeId={selectedResumeId} />
-      </div>
-    </div>
+      {/* Tools Workspace Grid */}
+      <AnimatePresence mode="wait">
+        <motion.div 
+          className="grid gap-4 sm:gap-6 grid-cols-1 md:grid-cols-2 lg:gap-8"
+          variants={itemVariants}
+          layout // Smoothly animates layout shifts if elements resize dynamically
+        >
+          {/* Skills Suggestion Card Wrapper */}
+          <motion.div 
+            className="w-full transform-gpu bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow duration-300"
+            whileHover={{ y: -2 }} // Subtle interactive depth on mouse devices
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <SkillsSuggestionTool resumeId={selectedResumeId} />
+          </motion.div>
+
+          {/* Grammar Fix Card Wrapper */}
+          <motion.div 
+            className="w-full transform-gpu bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow duration-300"
+            whileHover={{ y: -2 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
+          >
+            <GrammarFixTool resumeId={selectedResumeId} />
+          </motion.div>
+        </motion.div>
+      </AnimatePresence>
+    </motion.div>
   );
 }

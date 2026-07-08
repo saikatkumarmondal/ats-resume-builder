@@ -1,3 +1,7 @@
+"use client";
+
+import { useState } from "react";
+import { motion } from "framer-motion";
 import { Search } from "lucide-react";
 import { MobileSidebar } from "@/components/dashboard/mobile-sidebar";
 import { DashboardBreadcrumb } from "@/components/dashboard/dashboard-breadcrumb";
@@ -9,21 +13,62 @@ interface NavbarProps {
   userEmail: string;
 }
 
+// Global header animation orchestration parameters
+const headerVariants = {
+  hidden: { opacity: 0, y: -8 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 140,
+      damping: 18,
+    },
+  },
+};
+
 export function Navbar({ userName, userEmail }: NavbarProps) {
+  const [isSearchFocused, setIsSearchFocused] = useState(false);
+
   return (
-    <header className="flex h-16 items-center gap-4 border-b bg-background px-4 lg:px-6">
-      <MobileSidebar />
-      <DashboardBreadcrumb />
-      <div className="ml-auto flex items-center gap-3">
-        <div className="relative hidden sm:block">
-          <Search className="absolute left-2.5 top-2.5 size-4 text-muted-foreground" />
+    <motion.header
+      variants={headerVariants}
+      initial="hidden"
+      animate="visible"
+      className="flex h-16 w-full items-center justify-between gap-4 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4 lg:px-6 sticky top-0 z-40 transform-gpu"
+    >
+      {/* Navigation and Route Tracking Blocks */}
+      <div className="flex items-center gap-3 sm:gap-4 overflow-hidden max-w-[60%] sm:max-w-[70%]">
+        <MobileSidebar />
+        <DashboardBreadcrumb />
+      </div>
+
+      {/* Global Utilities and Profile Control Panel */}
+      <div className="flex items-center gap-3 ml-auto shrink-0">
+        
+        {/* Animated Search Bar Block - Hidden on mobile viewports */}
+        <motion.div 
+          className="relative hidden sm:block transform-gpu"
+          animate={{
+            width: isSearchFocused ? 280 : 256, // Expand seamlessly from 64 to 70
+          }}
+          transition={{ type: "spring", stiffness: 350, damping: 26 }}
+        >
+          <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <Input
             placeholder="Search resumes..."
-            className="w-64 pl-8"
+            className="w-full pl-9 h-9 text-sm transition-shadow duration-200 focus-visible:ring-2 focus-visible:ring-primary/20"
+            onFocus={() => setIsSearchFocused(true)}
+            onBlur={() => setIsSearchFocused(false)}
           />
+        </motion.div>
+
+        {/* Profile Control Menu Dropdown */}
+        <div className="relative">
+          <ProfileMenu userName={userName} userEmail={userEmail} />
         </div>
-        <ProfileMenu userName={userName} userEmail={userEmail} />
+        
       </div>
-    </header>
+    </motion.header>
   );
 }

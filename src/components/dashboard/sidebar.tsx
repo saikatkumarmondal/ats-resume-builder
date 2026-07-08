@@ -1,17 +1,52 @@
+"use client";
+
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
+
+// Sidebar layout container entry orchestration settings
+const sidebarVariants = {
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 140,
+      damping: 20,
+    },
+  },
+};
 
 export function Sidebar() {
   return (
-    <aside className="hidden w-64 shrink-0 border-r bg-background lg:flex lg:flex-col">
-      <div className="flex h-16 items-center border-b px-6">
-        <Link href="/dashboard" className="text-lg font-semibold tracking-tight">
-          ResumeForge
+    <motion.aside
+      variants={sidebarVariants}
+      initial="hidden"
+      animate="visible"
+      className="hidden w-64 shrink-0 border-r bg-background lg:flex lg:flex-col h-screen sticky top-0 transform-gpu"
+    >
+      {/* Brand Header Identity Slot */}
+      <div className="flex h-16 items-center border-b px-6 shrink-0">
+        <Link 
+          href="/dashboard" 
+          className="outline-none focus-visible:ring-2 focus-visible:ring-primary/20 rounded-md py-1 block w-fit"
+        >
+          <motion.span
+            whileHover={{ scale: 1.02, x: 2 }}
+            whileTap={{ scale: 0.98 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
+            className="text-lg font-semibold tracking-tight block bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent select-none cursor-pointer"
+          >
+            ResumeForge
+          </motion.span>
         </Link>
       </div>
-      <div className="flex-1 overflow-y-auto">
+
+      {/* Scrollable Navigation Container Slot */}
+      <div className="flex-1 overflow-y-auto no-scrollbar scroll-smooth">
         <SidebarNav />
       </div>
-    </aside>
+    </motion.aside>
   );
 }

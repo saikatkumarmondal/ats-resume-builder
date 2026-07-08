@@ -2,6 +2,7 @@
 
 import { LogOut, Settings, User } from "lucide-react";
 import Link from "next/link";
+import { motion } from "framer-motion";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import {
   DropdownMenu,
@@ -27,45 +28,108 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
+// Parent overlay panel animation configurations
+const menuContentVariants = {
+  hidden: { opacity: 0, scale: 0.95, y: -10 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 22,
+      staggerChildren: 0.04, // Rapid consecutive waterfall entry for options
+      delayChildren: 0.02,
+    },
+  },
+};
+
+// Menu element nodes variants
+const menuItemVariants = {
+  hidden: { opacity: 0, x: -5 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: { type: "spring", stiffness: 200, damping: 18 }
+  },
+};
+
 export function ProfileMenu({ userName, userEmail }: ProfileMenuProps) {
   return (
     <DropdownMenu>
+      
+      {/* Interactive Avatar Trigger */}
       <DropdownMenuTrigger asChild>
-        <button className="flex items-center gap-2 rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring">
-          <Avatar className="size-8">
-            <AvatarFallback>{getInitials(userName)}</AvatarFallback>
+        <motion.button 
+          whileTap={{ scale: 0.92 }}
+          whileHover={{ scale: 1.04 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
+          className="flex items-center gap-2 rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring cursor-pointer select-none transform-gpu"
+        >
+          <Avatar className="size-8 border shadow-sm transition-colors duration-200 hover:border-primary/30">
+            <AvatarFallback className="font-semibold text-xs tracking-wider bg-secondary text-secondary-foreground">
+              {getInitials(userName)}
+            </AvatarFallback>
           </Avatar>
-        </button>
+        </motion.button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-56">
-        <DropdownMenuLabel className="flex flex-col">
-          <span className="text-sm font-medium">{userName}</span>
-          <span className="text-xs font-normal text-muted-foreground">
-            {userEmail}
-          </span>
-        </DropdownMenuLabel>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <Link href="/profile">
-            <User className="mr-2 size-4" />
-            Profile
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuItem asChild>
-          <Link href="/settings">
-            <Settings className="mr-2 size-4" />
-            Settings
-          </Link>
-        </DropdownMenuItem>
-        <DropdownMenuSeparator />
-        <DropdownMenuItem asChild>
-          <form action={logoutUser} className="w-full">
-            <button type="submit" className="flex w-full items-center">
-              <LogOut className="mr-2 size-4" />
-              Log out
-            </button>
-          </form>
-        </DropdownMenuItem>
+
+      {/* Animated Dropdown Menu Layer */}
+      <DropdownMenuContent align="end" className="w-56 p-1 overflow-hidden" asChild>
+        <motion.div
+          variants={menuContentVariants}
+          initial="hidden"
+          animate="visible"
+          className="transform-gpu"
+        >
+          {/* User Account Label Card Header */}
+          <DropdownMenuLabel className="flex flex-col px-2.5 py-2">
+            <span className="text-sm font-semibold tracking-tight text-foreground truncate">
+              {userName}
+            </span>
+            <span className="text-xs font-normal text-muted-foreground truncate">
+              {userEmail}
+            </span>
+          </DropdownMenuLabel>
+          
+          <DropdownMenuSeparator className="my-1" />
+
+          {/* Profile Route Link */}
+          <motion.div variants={menuItemVariants}>
+            <DropdownMenuItem asChild className="cursor-pointer px-2.5 py-2 transition-colors duration-150">
+              <Link href="/profile" className="flex w-full items-center">
+                <User className="mr-2 size-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <span className="text-sm font-medium">Profile</span>
+              </Link>
+            </DropdownMenuItem>
+          </motion.div>
+
+          {/* Settings Route Link */}
+          <motion.div variants={menuItemVariants}>
+            <DropdownMenuItem asChild className="cursor-pointer px-2.5 py-2 transition-colors duration-150">
+              <Link href="/settings" className="flex w-full items-center">
+                <Settings className="mr-2 size-4 text-muted-foreground group-hover:text-foreground transition-colors" />
+                <span className="text-sm font-medium">Settings</span>
+              </Link>
+            </DropdownMenuItem>
+          </motion.div>
+
+          <DropdownMenuSeparator className="my-1" />
+
+          {/* Secure Logout Action Submission Form Wrapper */}
+          <motion.div variants={menuItemVariants}>
+            <DropdownMenuItem asChild className="cursor-pointer px-2.5 py-2 text-destructive focus:bg-destructive/10 focus:text-destructive transition-colors duration-150">
+              <form action={logoutUser} className="w-full">
+                <button type="submit" className="flex w-full items-center text-left font-medium text-sm outline-none bg-transparent border-none p-0 cursor-pointer">
+                  <LogOut className="mr-2 size-4 current-color" />
+                  <span>Log out</span>
+                </button>
+              </form>
+            </DropdownMenuItem>
+          </motion.div>
+          
+        </motion.div>
       </DropdownMenuContent>
     </DropdownMenu>
   );

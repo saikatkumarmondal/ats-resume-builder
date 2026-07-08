@@ -12,11 +12,7 @@ import {
   useSensors,
   type DragEndEvent,
 } from "@dnd-kit/core";
-import {
-  SortableContext,
-  verticalListSortingStrategy,
-  arrayMove,
-} from "@dnd-kit/sortable";
+import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable";
 import {
   saveExperiencesSchema,
   type SaveExperiencesInput,
@@ -79,21 +75,26 @@ export function ExperienceSectionForm({
 
   const handleDragEnd = (event: DragEndEvent) => {
     const { active, over } = event;
+
     if (!over || active.id === over.id) return;
 
     const oldIndex = fields.findIndex((field) => field.fieldKey === active.id);
     const newIndex = fields.findIndex((field) => field.fieldKey === over.id);
+
     move(oldIndex, newIndex);
   };
 
   return (
     <Form {...form}>
-      <form className="space-y-4">
-        <div className="flex items-center justify-between">
-          <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+      <form className="space-y-5 sm:space-y-6">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h2 className="text-xs font-semibold uppercase tracking-[0.2em] text-muted-foreground sm:text-sm">
             Experience
           </h2>
-          <AutosaveIndicator status={autosaveStatus} />
+
+          <div className="self-start sm:self-auto transition-all duration-300 ease-out">
+            <AutosaveIndicator status={autosaveStatus} />
+          </div>
         </div>
 
         <DndContext
@@ -105,16 +106,26 @@ export function ExperienceSectionForm({
             items={fields.map((field) => field.fieldKey)}
             strategy={verticalListSortingStrategy}
           >
-            <div className="space-y-4">
+            <div className="space-y-4 sm:space-y-5">
               {fields.map((field, index) => (
-                <SortableExperienceItem
+                <div
                   key={field.fieldKey}
-                  id={field.fieldKey}
-                  control={form.control}
-                  index={index}
-                  isCurrent={watchedExperiences[index]?.isCurrent ?? false}
-                  onRemove={() => remove(index)}
-                />
+                  className="
+                    transition-all
+                    duration-300
+                    ease-out
+                    hover:-translate-y-0.5
+                    hover:scale-[1.01]
+                  "
+                >
+                  <SortableExperienceItem
+                    id={field.fieldKey}
+                    control={form.control}
+                    index={index}
+                    isCurrent={watchedExperiences[index]?.isCurrent ?? false}
+                    onRemove={() => remove(index)}
+                  />
+                </div>
               ))}
             </div>
           </SortableContext>
@@ -123,11 +134,26 @@ export function ExperienceSectionForm({
         <Button
           type="button"
           variant="outline"
-          className="w-full"
           onClick={() => append(EMPTY_EXPERIENCE)}
+          className="
+            group
+            w-full
+            h-11
+            sm:h-12
+            rounded-xl
+            border-dashed
+            transition-all
+            duration-300
+            ease-out
+            hover:scale-[1.01]
+            hover:shadow-lg
+            active:scale-[0.98]
+            text-sm
+            sm:text-base
+          "
         >
-          <Plus className="mr-2 size-4" />
-          Add Experience
+          <Plus className="mr-2 size-4 transition-transform duration-300 group-hover:rotate-90 group-hover:scale-110" />
+          <span>Add Experience</span>
         </Button>
       </form>
     </Form>

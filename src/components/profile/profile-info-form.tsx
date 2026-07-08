@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { User, Mail, Loader2, CheckCircle2, AlertCircle } from "lucide-react";
+
 import { updateProfileSchema, type UpdateProfileInput } from "@/schemas/profile.schema";
 import { updateProfile } from "@/actions/profile.actions";
 import { Input } from "@/components/ui/input";
@@ -15,7 +17,7 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 
 interface ProfileInfoFormProps {
   currentName: string;
@@ -25,99 +27,127 @@ interface ProfileInfoFormProps {
 export function ProfileInfoForm({ currentName, email }: ProfileInfoFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const form = useForm<UpdateProfileInput>({
     resolver: zodResolver(updateProfileSchema),
     defaultValues: { name: currentName },
   });
 
+  // Track if the field data differs from initial props
+  const isFormDirty = form.formState.isDirty;
+
   const onSubmit = async (values: UpdateProfileInput) => {
     setSuccessMessage(null);
+    setErrorMessage(null);
     setIsSubmitting(true);
-    const result = await updateProfile(values);
-    setIsSubmitting(false);
-
-    if (result.success) {
-      setSuccessMessage("Profile updated successfully.");
+    
+    try {
+      const result = await updateProfile(values);
+      if (result.success) {
+        setSuccessMessage("Your profile information has been updated successfully.");
+        // Re-calibrate dirty form flags using updated dataset values
+        form.reset({ name: values.name });
+      } else {
+        setErrorMessage(result.error || "Failed to update profile. Please try again.");
+      }
+    } catch (err) {
+      setErrorMessage("An unexpected network error occurred.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <div className="w-full max-w-2xl mx-auto p-4 sm:p-6 md:p-8">
-      <Card className="overflow-hidden border border-border/50 bg-card/50 backdrop-blur-md rounded-xl shadow-sm transition-all duration-300 hover:shadow-md">
-        <CardHeader className="space-y-1.5 p-6 sm:p-8 border-b border-border/40 bg-muted/20">
-          <CardTitle className="text-xl font-semibold tracking-tight text-foreground">
-            Profile Information
-          </CardTitle>
-        </CardHeader>
-        <CardContent className="p-6 sm:p-8">
-          <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-              <FormField
-                control={form.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem className="space-y-2">
-                    <FormLabel className="text-sm font-medium tracking-tight text-foreground/90">
-                      Full name
-                    </FormLabel>
-                    <FormControl>
-                      <Input 
-                        {...field} 
-                        className="h-10 px-3.5 rounded-lg border border-input/80 bg-background transition-all duration-200 focus-visible:ring-2 focus-visible:ring-ring/20 focus-visible:ring-offset-0 focus-visible:border-ring"
-                      />
-                    </FormControl>
-                    <FormMessage className="text-xs font-medium text-destructive/90" />
-                  </FormItem>
-                )}
-              />
-
-              <div className="space-y-2">
-                <FormLabel className="text-sm font-medium tracking-tight text-foreground/90">
-                  Email
-                </FormLabel>
-                <Input 
-                  value={email} 
-                  disabled 
-                  className="h-10 px-3.5 rounded-lg border border-border/50 bg-muted/40 text-muted-foreground/80 cursor-not-allowed select-none"
-                />
-                <p className="text-xs text-muted-foreground/70 tracking-wide pl-0.5">
-                  Email cannot be changed.
-                </p>
-              </div>
-
-              {successMessage && (
-                <div className="rounded-lg border border-emerald-500/20 bg-emerald-500/5 p-3.5 text-sm text-emerald-600 dark:text-emerald-400 flex items-center gap-2.5 animate-in fade-in slide-in-from-top-1 duration-200">
-                  <svg className="h-4 w-4 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
-                  </svg>
-                  <p className="font-medium tracking-wide">{successMessage}</p>
-                </div>
+    <Card className="border-slate-200/80 bg-white shadow-sm max-w-xl">
+      <CardHeader className="space-y-1">
+        <div className="flex items-center gap-2 text-slate-800">
+          <User className="h-4 w-4 text-[#2E6BFF]" />
+          <CardTitle className="text-base font-bold tracking-tight">Profile Information</CardTitle>
+        </div>
+        <CardDescription className="text-xs text-slate-500">
+          Update your public profile display name and identity details.
+        </CardDescription>
+      </CardHeader>
+      
+      <CardContent>
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+            
+            {/* Full Name Form Section Field */}
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel className="text-xs font-semibold text-slate-700">Full Name</FormLabel>
+                  <FormControl>
+                    <Input 
+                      className="border-slate-200 focus-visible:ring-[#2E6BFF]" 
+                      placeholder="John Doe"
+                      disabled={isSubmitting}
+                      {...field} 
+                    />
+                  </FormControl>
+                  <FormMessage className="text-xs font-medium" />
+                </FormItem>
               )}
+            />
 
-              <div className="flex justify-end pt-2">
-                <Button 
-                  type="submit" 
-                  disabled={isSubmitting}
-                  className="w-full sm:w-auto min-w-[120px] h-10 px-5 rounded-lg font-medium shadow-sm transition-all duration-200 active:scale-[0.98] disabled:opacity-70"
-                >
-                  {isSubmitting ? (
-                    <div className="flex items-center justify-center gap-2">
-                      <svg className="animate-spin h-4 w-4 text-current" fill="none" viewBox="0 0 24 24">
-                        <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                        <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
-                      </svg>
-                      <span>Saving...</span>
-                    </div>
-                  ) : (
-                    "Save changes"
-                  )}
-                </Button>
+            {/* Read-Only Disabled Account Email Section */}
+            <div className="space-y-2">
+              <div className="flex items-center justify-between">
+                <FormLabel className="text-xs font-semibold text-slate-700">Email Address</FormLabel>
+                <span className="text-[10px] font-medium text-slate-400 flex items-center gap-1 bg-slate-50 border px-1.5 py-0.5 rounded">
+                  <Mail className="h-3 w-3" /> Immutable
+                </span>
               </div>
-            </form>
-          </Form>
-        </CardContent>
-      </Card>
-    </div>
+              <Input 
+                value={email} 
+                disabled 
+                className="border-slate-200/60 bg-slate-50/50 text-slate-400 cursor-not-allowed select-none"
+              />
+              <p className="text-[11px] text-slate-400 tracking-normal pl-0.5">
+                Your login email endpoint is verified and cannot be changed.
+              </p>
+            </div>
+
+            {/* Response Alerts Stack */}
+            {successMessage && (
+              <div className="flex items-start gap-2.5 rounded-lg bg-emerald-50 border border-emerald-100 p-3 text-emerald-800 transform-gpu animate-in fade-in slide-in-from-top-1 duration-200">
+                <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-emerald-600" />
+                <p className="text-xs font-medium leading-relaxed">{successMessage}</p>
+              </div>
+            )}
+
+            {errorMessage && (
+              <div className="flex items-start gap-2.5 rounded-lg bg-destructive/5 border border-destructive/10 p-3 text-destructive transform-gpu animate-in fade-in slide-in-from-top-1 duration-200">
+                <AlertCircle className="h-4 w-4 mt-0.5 shrink-0 text-destructive" />
+                <p className="text-xs font-medium leading-relaxed">{errorMessage}</p>
+              </div>
+            )}
+
+            {/* Action Form Footer Submit Button */}
+            <div className="flex justify-end pt-2">
+              <Button 
+                type="submit" 
+                className="w-full sm:w-auto bg-[#2E6BFF] hover:bg-[#2057DE] text-white shadow-sm shadow-blue-500/10 active:scale-[0.99] transition-transform duration-150 transform-gpu"
+                disabled={isSubmitting || !isFormDirty}
+              >
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Saving updates...
+                  </>
+                ) : (
+                  "Save changes"
+                )}
+              </Button>
+            </div>
+
+          </form>
+        </Form>
+      </CardContent>
+    </Card>
   );
 }

@@ -1,70 +1,133 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Sparkles, ScanSearch, LayoutTemplate, FileDown, Save, Smartphone } from "lucide-react";
+import {
+  Zap,
+  ShieldCheck,
+  LayoutTemplate,
+  Sparkles,
+  Users,
+  BarChart3,
+} from "lucide-react";
 
+// Staged header section and layout block entry parameters
+const containerVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1, // Smooth consecutive cascading delays
+    },
+  },
+};
+
+// Bento card entry configuration
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 120,
+      damping: 18,
+    },
+  },
+};
+
+// TODO: replace with your real feature data — consider moving to
+// @/config/features.config.ts to mirror the FAQ_ITEMS pattern.
 const FEATURES = [
   {
-    icon: Sparkles,
-    title: "AI that enhances, never invents",
-    description:
-      "Gemini improves your wording and phrasing — it never fabricates experience you didn't provide.",
-    size: "lg",
+    icon: Zap,
+    title: "Blazing fast",
+    description: "Ship pages in seconds with instant, edge-cached rendering.",
+    className: "sm:col-span-2",
   },
   {
-    icon: ScanSearch,
-    title: "ATS Score & Analysis",
-    description: "See keyword match, formatting, readability, and grammar scores before you apply.",
-    size: "md",
+    icon: ShieldCheck,
+    title: "Secure by default",
+    description: "SOC 2-ready infrastructure with encryption at rest and in transit.",
+    className: "",
   },
   {
     icon: LayoutTemplate,
-    title: "6 ATS-safe templates",
-    description: "Modern, Professional, Executive, Minimal, Creative, Corporate.",
-    size: "md",
+    title: "Ready-made templates",
+    description: "Start from a library of production-grade layouts.",
+    className: "",
   },
-  { icon: FileDown, title: "One-click PDF export", description: "Print-ready, multi-page, consistent typography.", size: "sm" },
-  { icon: Save, title: "Autosave everything", description: "Never lose an edit — every field saves as you type.", size: "sm" },
-  { icon: Smartphone, title: "Fully responsive", description: "Build and edit from your phone, tablet, or desktop.", size: "sm" },
+  {
+    icon: Sparkles,
+    title: "AI-assisted editing",
+    description: "Generate and refine content inline, without leaving the page.",
+    className: "sm:col-span-2",
+  },
+  {
+    icon: Users,
+    title: "Built for teams",
+    description: "Real-time collaboration with granular permissions.",
+    className: "",
+  },
+  {
+    icon: BarChart3,
+    title: "Actionable analytics",
+    description: "Understand what's converting, down to the section level.",
+    className: "",
+  },
 ];
 
 export function FeaturesBento() {
   return (
-    <section id="features" className="bg-[#F5F6FA] py-24">
-      <div className="mx-auto max-w-6xl px-6">
-        <div className="max-w-xl">
-          <span className="font-mono-utility text-xs uppercase tracking-widest text-[#2E6BFF]">
+    <section
+      id="features"
+      className="bg-[#F5F6FA] py-16 sm:py-24 w-full overflow-hidden"
+    >
+      <motion.div
+        variants={containerVariants}
+        initial="hidden"
+        whileInView="visible"
+        viewport={{ once: true, margin: "-80px" }}
+        className="mx-auto max-w-6xl px-4 sm:px-6 space-y-8 sm:space-y-10"
+      >
+        {/* Header */}
+        <motion.div
+          variants={itemVariants}
+          className="text-center space-y-2 sm:space-y-3"
+        >
+          <span className="font-mono text-[10px] sm:text-xs uppercase tracking-widest text-[#2E6BFF] font-semibold block">
             Features
           </span>
-          <h2 className="font-display mt-3 text-4xl text-[#0B1226]">
-            Everything a hiring algorithm looks for
+          <h2 className="font-display text-3xl font-bold tracking-tight text-[#0B1226] sm:text-4xl">
+            Everything you need, built in
           </h2>
-        </div>
+        </motion.div>
 
-        <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map((feature, index) => {
+        {/* Bento grid */}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+          {FEATURES.map((feature) => {
             const Icon = feature.icon;
             return (
               <motion.div
                 key={feature.title}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-80px" }}
-                transition={{ duration: 0.5, delay: index * 0.05 }}
-                className={`rounded-2xl border border-black/5 bg-white p-6 shadow-sm ${
-                  feature.size === "lg" ? "sm:col-span-2 lg:col-span-2 lg:row-span-2" : ""
-                }`}
+                variants={itemVariants}
+                whileHover={{ y: -2 }}
+                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                className={`bg-background rounded-xl border p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-200 ${feature.className}`}
               >
-                <div className="flex size-10 items-center justify-center rounded-xl bg-[#2E6BFF]/10">
-                  <Icon className="size-5 text-[#2E6BFF]" />
+                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#2E6BFF]/10 text-[#2E6BFF]">
+                  <Icon className="h-5 w-5" />
                 </div>
-                <h3 className="mt-4 text-lg font-semibold text-[#0B1226]">{feature.title}</h3>
-                <p className="mt-1.5 text-sm text-[#0B1226]/60">{feature.description}</p>
+                <h3 className="mt-4 text-sm sm:text-base font-semibold text-[#0B1226]">
+                  {feature.title}
+                </h3>
+                <p className="mt-1.5 text-xs sm:text-sm text-[#0B1226]/70 leading-relaxed">
+                  {feature.description}
+                </p>
               </motion.div>
             );
           })}
         </div>
-      </div>
+      </motion.div>
     </section>
   );
 }
