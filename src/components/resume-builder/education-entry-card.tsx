@@ -68,7 +68,7 @@ function MonthYearField({
                     <SelectValue placeholder="Month" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
+                <SelectContent position="popper" className="max-h-64 overflow-y-auto">
                   {MONTH_OPTIONS.map((m) => (
                     <SelectItem key={m.value} value={m.value}>
                       {m.label}
@@ -83,13 +83,13 @@ function MonthYearField({
                     <SelectValue placeholder="Year" />
                   </SelectTrigger>
                 </FormControl>
-                <SelectContent>
-                  {YEAR_OPTIONS.map((y) => (
-                    <SelectItem key={y} value={y}>
-                      {y}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
+                <SelectContent position="popper" className="max-h-64 overflow-y-auto">
+                    {YEAR_OPTIONS.map((y) => (
+                      <SelectItem key={y} value={y}>
+                        {y}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
               </Select>
             </div>
             <FormMessage className="text-xs font-medium" />

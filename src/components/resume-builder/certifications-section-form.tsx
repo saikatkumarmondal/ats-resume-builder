@@ -5,7 +5,7 @@ import { useForm, useFieldArray } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, Trash2, Award, Link2, Calendar, Building2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { MonthYearPicker } from "@/components/shared/month-year-picker";
 import {
   saveCertificationsSchema,
   type SaveCertificationsInput,
@@ -152,24 +152,20 @@ export function CertificationsSectionForm({
 
                       {/* Issue Date selector track */}
                       <FormField
-                        control={form.control}
-                        name={`certifications.${index}.issueDate`}
-                        render={({ field: inputField }) => (
-                          <FormItem>
-                            <FormLabel className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
-                              <Calendar className="h-3.5 w-3.5 text-slate-400" /> Issue Date
-                            </FormLabel>
-                            <FormControl>
-                              <Input 
-                                type="month" 
-                                className="border-slate-200 focus-visible:ring-[#2E6BFF] text-slate-700" 
-                                {...inputField} 
-                              />
-                            </FormControl>
-                            <FormMessage className="text-xs font-medium" />
-                          </FormItem>
-                        )}
-                      />
+  control={form.control}
+  name={`certifications.${index}.issueDate`}
+  render={({ field: inputField }) => (
+    <FormItem>
+      <FormLabel className="text-xs font-semibold text-slate-700 flex items-center gap-1.5">
+        <Calendar className="h-3.5 w-3.5 text-slate-400" /> Issue Date
+      </FormLabel>
+      <FormControl>
+        <MonthYearPicker value={inputField.value} onChange={inputField.onChange} />
+      </FormControl>
+      <FormMessage className="text-xs font-medium" />
+    </FormItem>
+  )}
+/>
 
                       {/* Verification Link / Credential Anchor tracking path */}
                       <FormField

@@ -19,7 +19,7 @@ export function MonthYearPicker({ value, onChange, disabled }: MonthYearPickerPr
   const [year, month] = value ? value.split("-") : ["", ""];
 
   const handleMonthChange = (newMonth: string) => {
-    onChange(`${year || YEAR_OPTIONS[0]}-${newMonth}`);
+    onChange(`${year || String(new Date().getFullYear())}-${newMonth}`);
   };
 
   const handleYearChange = (newYear: string) => {
@@ -28,25 +28,38 @@ export function MonthYearPicker({ value, onChange, disabled }: MonthYearPickerPr
 
   return (
     <div className="flex gap-2">
-      <Select value={month} onValueChange={handleMonthChange} disabled={disabled}>
-        <SelectTrigger className="w-full">
+      <Select value={month || ""} onValueChange={handleMonthChange} disabled={disabled}>
+        <SelectTrigger className="h-10 w-full border-slate-200 px-3 shadow-sm transition-colors focus:ring-[#2E6BFF]">
           <SelectValue placeholder="Month" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent
+          position="popper"
+          sideOffset={4}
+          className="max-h-64 overflow-y-auto"
+        >
           {MONTH_OPTIONS.map((monthOption) => (
-            <SelectItem key={monthOption.value} value={monthOption.value}>
+            <SelectItem
+              key={monthOption.value}
+              value={monthOption.value}
+              className="cursor-pointer"
+            >
               {monthOption.label}
             </SelectItem>
           ))}
         </SelectContent>
       </Select>
-      <Select value={year} onValueChange={handleYearChange} disabled={disabled}>
-        <SelectTrigger className="w-full">
+
+      <Select value={year || ""} onValueChange={handleYearChange} disabled={disabled}>
+        <SelectTrigger className="h-10 w-full border-slate-200 px-3 shadow-sm transition-colors focus:ring-[#2E6BFF]">
           <SelectValue placeholder="Year" />
         </SelectTrigger>
-        <SelectContent>
+        <SelectContent
+          position="popper"
+          sideOffset={4}
+          className="max-h-64 overflow-y-auto"
+        >
           {YEAR_OPTIONS.map((yearOption) => (
-            <SelectItem key={yearOption} value={yearOption}>
+            <SelectItem key={yearOption} value={yearOption} className="cursor-pointer">
               {yearOption}
             </SelectItem>
           ))}
