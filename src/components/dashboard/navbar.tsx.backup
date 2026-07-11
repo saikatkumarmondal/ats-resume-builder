@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import { motion, type Variants } from "framer-motion";
-import { containerVariants, itemVariants, glowVariants } from "@/lib/animations";
 import { Search } from "lucide-react";
 import { MobileSidebar } from "@/components/dashboard/mobile-sidebar";
 import { DashboardBreadcrumb } from "@/components/dashboard/dashboard-breadcrumb";
@@ -17,7 +16,15 @@ interface NavbarProps {
 // Global header animation orchestration parameters
 const headerVariants: Variants = {
   hidden: { opacity: 0, y: -8 },
-  visible: { opacity: 1, y: 0 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 140,
+      damping: 18,
+    },
+  },
 };
 
 export function Navbar({ userName, userEmail }: NavbarProps) {
@@ -45,7 +52,7 @@ export function Navbar({ userName, userEmail }: NavbarProps) {
           animate={{
             width: isSearchFocused ? 280 : 256, // Expand seamlessly from 64 to 70
           }}
-          transition={{ duration: 0.2 }}
+          transition={{ type: "spring", stiffness: 350, damping: 26 }}
         >
           <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 size-4 text-muted-foreground pointer-events-none" />
           <Input

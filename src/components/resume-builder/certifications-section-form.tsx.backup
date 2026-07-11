@@ -86,7 +86,7 @@ export function CertificationsSectionForm({
                 initial={{ opacity: 0, height: 0, y: -10 }}
                 animate={{ opacity: 1, height: "auto", y: 0 }}
                 exit={{ opacity: 0, height: 0, y: 10 }}
-                transition={{ duration: 0.2 }}
+                transition={{ type: "spring", stiffness: 500, damping: 40 }}
                 className="overflow-hidden"
               >
                 <Card className="border-slate-200/80 bg-white shadow-sm hover:shadow-md transition-shadow duration-200 group relative">

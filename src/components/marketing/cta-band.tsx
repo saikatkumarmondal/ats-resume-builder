@@ -4,45 +4,7 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { ArrowRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
-
-// Parent text staging containers
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.12, // Smooth staggered cascade for typography elements
-    },
-  },
-};
-
-// Typography fade up properties
-const itemVariants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 100,
-      damping: 18,
-    },
-  },
-};
-
-// Subtle background glow pulsing layout configuration
-const glowVariants = {
-  initial: { scale: 0.9, opacity: 0.8 },
-  animate: {
-    scale: [0.9, 1.1, 0.9],
-    opacity: [0.8, 1, 0.8],
-    transition: {
-      duration: 8,
-      repeat: Infinity,
-      ease: "easeInOut",
-    },
-  },
-};
+import { containerVariants, itemVariants, glowVariants } from "@/lib/animations";
 
 export function CtaBand() {
   return (
@@ -60,7 +22,7 @@ export function CtaBand() {
         variants={containerVariants}
         initial="hidden"
         whileInView="visible"
-        viewport={{ once: true, margin: "-100px" }} // Triggers smoothly when scrolling into view
+        viewport={{ once: true, margin: "-100px" }}
         className="relative mx-auto max-w-2xl px-4 sm:px-6 z-10 space-y-4 sm:space-y-6"
       >
         {/* Animated Main Heading text */}
@@ -93,8 +55,8 @@ export function CtaBand() {
               <span>Start Building Free</span>
               <motion.span
                 className="inline-flex ml-2"
-                whileHover={{ x: 4 }} // Move arrow right on button hover
-                transition={{ type: "spring", stiffness: 400, damping: 10 }}
+                whileHover={{ x: 4 }}
+                transition={{ duration: 0.2 }}
               >
                 <ArrowRight className="size-4 transition-transform group-hover:translate-x-1" />
               </motion.span>

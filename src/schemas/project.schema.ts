@@ -18,3 +18,7 @@ export const saveProjectsSchema = z.object({
 
 export type ProjectEntry = z.infer<typeof projectEntrySchema>;
 export type SaveProjectsInput = z.infer<typeof saveProjectsSchema>;
+
+// Form-facing type: matches the schema's *input* shape (before defaults are
+// applied), which is what react-hook-form + zodResolver actually expect.
+export type SaveProjectsFormValues = z.input<typeof saveProjectsSchema>;

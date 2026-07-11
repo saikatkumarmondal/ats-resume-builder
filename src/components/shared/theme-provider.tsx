@@ -10,6 +10,7 @@ type ThemeProviderProps = {
   defaultTheme?: Theme;
   enableSystem?: boolean;
   storageKey?: string;
+  disableTransitionOnChange?: boolean;
 };
 
 type ThemeProviderState = {
@@ -40,12 +41,31 @@ function applyTheme(resolved: "light" | "dark", attribute: "class" | "data-theme
   root.style.colorScheme = resolved;
 }
 
+function disableTransitionsTemporarily() {
+  const css = document.createElement("style");
+  css.appendChild(
+    document.createTextNode(
+      "*,*::before,*::after{transition:none !important;animation:none !important;}"
+    )
+  );
+  document.head.appendChild(css);
+
+  return () => {
+    // Force a reflow so the browser registers the style before removing it.
+    (() => window.getComputedStyle(document.body))();
+    setTimeout(() => {
+      document.head.removeChild(css);
+    }, 0);
+  };
+}
+
 export function ThemeProvider({
   children,
   attribute = "class",
   defaultTheme = "system",
   enableSystem = true,
   storageKey = "theme",
+  disableTransitionOnChange = false,
 }: ThemeProviderProps) {
   // Read the value the inline script (see layout.tsx) already applied,
   // so there's no mismatch/flash on mount.
@@ -73,9 +93,16 @@ export function ThemeProvider({
   // Apply theme whenever it changes.
   React.useEffect(() => {
     const resolved = theme === "system" ? getSystemTheme() : theme;
+
+    const restoreTransitions = disableTransitionOnChange
+      ? disableTransitionsTemporarily()
+      : undefined;
+
     setResolvedTheme(resolved);
     applyTheme(resolved, attribute);
-  }, [theme, attribute]);
+
+    restoreTransitions?.();
+  }, [theme, attribute, disableTransitionOnChange]);
 
   // Track OS theme changes while in "system" mode.
   React.useEffect(() => {
@@ -84,12 +111,19 @@ export function ThemeProvider({
     const handleChange = () => {
       if (theme !== "system") return;
       const resolved = getSystemTheme();
+
+      const restoreTransitions = disableTransitionOnChange
+        ? disableTransitionsTemporarily()
+        : undefined;
+
       setResolvedTheme(resolved);
       applyTheme(resolved, attribute);
+
+      restoreTransitions?.();
     };
     mql.addEventListener("change", handleChange);
     return () => mql.removeEventListener("change", handleChange);
-  }, [theme, attribute, enableSystem]);
+  }, [theme, attribute, enableSystem, disableTransitionOnChange]);
 
   // Keep theme in sync across tabs.
   React.useEffect(() => {

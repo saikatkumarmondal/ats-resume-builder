@@ -58,7 +58,7 @@ export function CreateResumeDialog() {
         // Implement error handling mechanisms here if needed (e.g., toast alerts)
         setIsMutatingAction(false);
       }
-    } catch (error) {
+    } catch {
       setIsMutatingAction(false);
     }
   };

@@ -18,13 +18,27 @@ interface AiAssistantWorkspaceProps {
 
 // Animation variants for the container orchestration
 const containerVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.15, // Smooth staggered entry for inner components
+    },
+  },
 };
 
+// Animation variants for individual components
 const itemVariants: Variants = {
-  hidden: { opacity: 0, y: 8 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
 };
 
 export function AiAssistantWorkspace({ resumes }: AiAssistantWorkspaceProps) {
@@ -70,7 +84,7 @@ export function AiAssistantWorkspace({ resumes }: AiAssistantWorkspaceProps) {
           <motion.div 
             className="w-full transform-gpu bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow duration-300"
             whileHover={{ y: -2 }} // Subtle interactive depth on mouse devices
-            transition={{ duration: 0.2 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
             <SkillsSuggestionTool resumeId={selectedResumeId} />
           </motion.div>
@@ -79,7 +93,7 @@ export function AiAssistantWorkspace({ resumes }: AiAssistantWorkspaceProps) {
           <motion.div 
             className="w-full transform-gpu bg-card rounded-xl border shadow-sm hover:shadow-md transition-shadow duration-300"
             whileHover={{ y: -2 }}
-            transition={{ duration: 0.2 }}
+            transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
             <GrammarFixTool resumeId={selectedResumeId} />
           </motion.div>

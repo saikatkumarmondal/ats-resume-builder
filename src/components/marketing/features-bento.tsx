@@ -9,31 +9,7 @@ import {
   Users,
   BarChart3,
 } from "lucide-react";
-
-// Staged header section and layout block entry parameters
-const containerVariants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: {
-      staggerChildren: 0.1, // Smooth consecutive cascading delays
-    },
-  },
-};
-
-// Bento card entry configuration
-const itemVariants = {
-  hidden: { opacity: 0, y: 15 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: {
-      type: "spring",
-      stiffness: 120,
-      damping: 18,
-    },
-  },
-};
+import { containerVariants, itemVariants } from "@/lib/animations";
 
 // TODO: replace with your real feature data — consider moving to
 // @/config/features.config.ts to mirror the FAQ_ITEMS pattern.
@@ -111,7 +87,7 @@ export function FeaturesBento() {
                 key={feature.title}
                 variants={itemVariants}
                 whileHover={{ y: -2 }}
-                transition={{ type: "spring", stiffness: 400, damping: 25 }}
+                transition={{ duration: 0.2 }}
                 className={`bg-background rounded-xl border p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow duration-200 ${feature.className}`}
               >
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#2E6BFF]/10 text-[#2E6BFF]">

@@ -28,14 +28,31 @@ function getInitials(name: string): string {
     .toUpperCase();
 }
 
+// Parent overlay panel animation configurations
 const menuContentVariants: Variants = {
-  hidden: { opacity: 0, y: -6, scale: 0.96 },
-  visible: { opacity: 1, y: 0, scale: 1 },
+  hidden: { opacity: 0, scale: 0.95, y: -10 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 22,
+      staggerChildren: 0.04, // Rapid consecutive waterfall entry for options
+      delayChildren: 0.02,
+    },
+  },
 };
 
+// Menu element nodes variants
 const menuItemVariants: Variants = {
-  hidden: { opacity: 0, x: -4 },
-  visible: { opacity: 1, x: 0 },
+  hidden: { opacity: 0, x: -5 },
+  visible: { 
+    opacity: 1, 
+    x: 0,
+    transition: { type: "spring", stiffness: 200, damping: 18 }
+  },
 };
 
 export function ProfileMenu({ userName, userEmail }: ProfileMenuProps) {
@@ -47,7 +64,7 @@ export function ProfileMenu({ userName, userEmail }: ProfileMenuProps) {
         <motion.button 
           whileTap={{ scale: 0.92 }}
           whileHover={{ scale: 1.04 }}
-          transition={{ duration: 0.2 }}
+          transition={{ type: "spring", stiffness: 400, damping: 15 }}
           className="flex items-center gap-2 rounded-full outline-none ring-offset-background focus-visible:ring-2 focus-visible:ring-ring cursor-pointer select-none transform-gpu"
         >
           <Avatar className="size-8 border shadow-sm transition-colors duration-200 hover:border-primary/30">

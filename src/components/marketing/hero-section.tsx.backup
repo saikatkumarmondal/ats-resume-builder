@@ -8,19 +8,43 @@ import { ScanningHeroCard } from "@/components/marketing/scanning-hero-card";
 
 // Parent layout mounting stagger parameters
 const containerVariants = {
-  hidden: { opacity: 0, y: 24 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.1, // Smooth, satisfying top-to-bottom sequence
+    },
+  },
 };
 
+// Text and component entry variants
 const itemVariants = {
-  hidden: { opacity: 0, y: 12 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 15 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 120,
+      damping: 18,
+    },
+  },
 };
 
 // Right column visual card spring entry configuration
 const visualCardVariants = {
-  hidden: { opacity: 0, scale: 0.96 },
-  visible: { opacity: 1, scale: 1 },
+  hidden: { opacity: 0, x: 20, y: 10 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    y: 0,
+    transition: {
+      type: "spring" as const,
+      stiffness: 80,
+      damping: 20,
+      delay: 0.2, // Let the text headline lead the visual layout
+    },
+  },
 };
 
 export function HeroSection() {

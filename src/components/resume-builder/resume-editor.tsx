@@ -268,7 +268,7 @@ export function ResumeEditor({
   // Desktop (>= lg): resizable horizontal split with full tab bar
   return (
     <ResizablePanelGroup
-      direction="horizontal"
+      orientation="horizontal"
       className="min-h-[calc(100vh-8rem)] rounded-xl border shadow-sm"
     >
       <ResizablePanel defaultSize={50} minSize={35}>

@@ -7,6 +7,7 @@ import { Plus } from "lucide-react";
 import {
   saveProjectsSchema,
   type SaveProjectsInput,
+  type SaveProjectsFormValues,
   type ProjectEntry,
 } from "@/schemas/project.schema";
 import { saveProjects } from "@/actions/project.actions";
@@ -37,7 +38,7 @@ export function ProjectsSectionForm({
   defaultProjects,
   onValuesChange,
 }: ProjectsSectionFormProps) {
-  const form = useForm<SaveProjectsInput>({
+  const form = useForm<SaveProjectsFormValues>({
     resolver: zodResolver(saveProjectsSchema),
     defaultValues: { resumeId, projects: defaultProjects },
     mode: "onBlur",
@@ -52,11 +53,11 @@ export function ProjectsSectionForm({
   const watchedProjects = form.watch("projects");
 
   useEffect(() => {
-    onValuesChange(watchedProjects);
+    onValuesChange((watchedProjects ?? []) as ProjectEntry[]);
   }, [watchedProjects, onValuesChange]);
 
   const autosaveStatus = useDebouncedAutosave(
-    form.watch(),
+    form.watch() as SaveProjectsInput,
     saveProjects,
     form.formState.isValid
   );
@@ -90,7 +91,7 @@ export function ProjectsSectionForm({
                 control={form.control}
                 setValue={form.setValue}
                 index={index}
-                techStack={watchedProjects[index]?.techStack ?? []}
+                techStack={watchedProjects?.[index]?.techStack ?? []}
                 onRemove={() => remove(index)}
               />
             </div>

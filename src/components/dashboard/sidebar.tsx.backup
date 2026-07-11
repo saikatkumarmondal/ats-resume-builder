@@ -2,13 +2,20 @@
 
 import Link from "next/link";
 import { motion, type Variants } from "framer-motion";
-import { containerVariants, itemVariants, glowVariants } from "@/lib/animations";
 import { SidebarNav } from "@/components/dashboard/sidebar-nav";
 
 // Sidebar layout container entry orchestration settings
 const sidebarVariants: Variants = {
-  hidden: { opacity: 0, x: -8 },
-  visible: { opacity: 1, x: 0 },
+  hidden: { opacity: 0, x: -20 },
+  visible: {
+    opacity: 1,
+    x: 0,
+    transition: {
+      type: "spring",
+      stiffness: 140,
+      damping: 20,
+    },
+  },
 };
 
 export function Sidebar() {
@@ -28,7 +35,7 @@ export function Sidebar() {
           <motion.span
             whileHover={{ scale: 1.02, x: 2 }}
             whileTap={{ scale: 0.98 }}
-            transition={{ duration: 0.2 }}
+            transition={{ type: "spring", stiffness: 400, damping: 15 }}
             className="text-lg font-semibold tracking-tight block bg-gradient-to-r from-foreground to-foreground/80 bg-clip-text text-transparent select-none cursor-pointer"
           >
             ResumeForge

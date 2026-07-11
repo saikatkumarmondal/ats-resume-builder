@@ -27,3 +27,7 @@ export const saveExperiencesSchema = z.object({
 
 export type ExperienceEntry = z.infer<typeof experienceEntrySchema>;
 export type SaveExperiencesInput = z.infer<typeof saveExperiencesSchema>;
+
+// Form-facing type: matches the schema's *input* shape (before defaults are
+// applied), which is what react-hook-form + zodResolver actually expect.
+export type SaveExperiencesFormValues = z.input<typeof saveExperiencesSchema>;

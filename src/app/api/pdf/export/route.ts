@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import React from "react";
-import { renderToBuffer } from "@react-pdf/renderer";
+import { renderToBuffer, type DocumentProps } from "@react-pdf/renderer";
 import { auth } from "@/lib/auth";
 import { prisma } from "@/lib/prisma";
 import { ResumePdfDocument } from "@/lib/pdf/resume-pdf-document";
@@ -102,12 +102,12 @@ export async function GET(request: NextRequest) {
   };
 
   const pdfBuffer = await renderToBuffer(
-    React.createElement(ResumePdfDocument, { data: previewData })
+    React.createElement(ResumePdfDocument, { data: previewData }) as React.ReactElement<DocumentProps>
   );
 
   const safeFileName = resume.title.replace(/[^a-z0-9]+/gi, "-").toLowerCase();
 
-  return new NextResponse(pdfBuffer, {
+  return new NextResponse(new Uint8Array(pdfBuffer), {
     headers: {
       "Content-Type": "application/pdf",
       "Content-Disposition": `attachment; filename="${safeFileName}.pdf"`,

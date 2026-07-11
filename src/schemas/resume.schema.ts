@@ -10,5 +10,6 @@ export const renameResumeSchema = z.object({
   title: z.string().trim().min(1, "Title is required").max(100),
 });
 
-export type CreateResumeInput = z.infer<typeof createResumeSchema>;
-export type RenameResumeInput = z.infer<typeof renameResumeSchema>;
+export type CreateResumeInput = z.input<typeof createResumeSchema>;
+export type CreateResumeData = z.output<typeof createResumeSchema>;
+export type RenameResumeInput = z.input<typeof renameResumeSchema>;

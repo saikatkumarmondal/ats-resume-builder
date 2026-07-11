@@ -224,6 +224,14 @@ function ResumePdfDocument({ data }: { data: ResumePreviewData }) {
   );
 }
 
+async function streamToBuffer(stream: NodeJS.ReadableStream): Promise<Buffer> {
+  const chunks: Buffer[] = [];
+  for await (const chunk of stream) {
+    chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk));
+  }
+  return Buffer.concat(chunks);
+}
+
 export async function GET(
   _req: NextRequest,
   { params }: { params: Promise<{ resumeId: string }> }
@@ -255,13 +263,14 @@ export async function GET(
   try {
     const data = mapResumeToData(resume);
     const document = <ResumePdfDocument data={data} />;
-    const pdfBuffer = await pdf(document).toBuffer();
+    const pdfStream = await pdf(document).toBuffer();
+    const pdfBuffer = await streamToBuffer(pdfStream as unknown as NodeJS.ReadableStream);
 
     const fileName = `${(resume.title || "resume")
       .replace(/[^a-z0-9]/gi, "-")
       .toLowerCase()}.pdf`;
 
-    return new NextResponse(Buffer.from(pdfBuffer), {
+    return new NextResponse(new Uint8Array(pdfBuffer), {
       status: 200,
       headers: {
         "Content-Type": "application/pdf",

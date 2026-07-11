@@ -3,12 +3,12 @@
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
 import type { Control } from "react-hook-form";
-import type { SaveExperiencesInput } from "@/schemas/experience.schema";
+import type { SaveExperiencesFormValues } from "@/schemas/experience.schema";
 import { ExperienceEntryCard } from "@/components/resume-builder/experience-entry-card";
 
 interface SortableExperienceItemProps {
   id: string;
-  control: Control<SaveExperiencesInput>;
+  control: Control<SaveExperiencesFormValues>;
   index: number;
   isCurrent: boolean;
   onRemove: () => void;
@@ -30,8 +30,6 @@ export function SortableExperienceItem({
     isDragging 
   } = useSortable({ id });
 
-  // Senior Performance Layer: Leveraging standard CSS values with a modern CSS translate string
-  // and triggering hardware acceleration via will-change when active.
   const style = {
     transform: CSS.Transform.toString(transform),
     transition: transition || "transform 200ms cubic-bezier(0.2, 0, 0, 1)",
@@ -42,7 +40,6 @@ export function SortableExperienceItem({
     <div 
       ref={setNodeRef} 
       style={style}
-      // Structural classes designed to enhance visibility during active state drag operations
       className={`
         w-full 
         rounded-xl 

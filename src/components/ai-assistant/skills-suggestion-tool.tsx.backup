@@ -12,22 +12,44 @@ interface SkillsSuggestionToolProps {
   resumeId: string;
 }
 
+// Parent animation variants for container orchestration
 const parentVariants: Variants = {
-  hidden: { opacity: 0, y: 16 },
-  visible: { opacity: 1, y: 0 },
+  hidden: { opacity: 0, y: 10 },
+  visible: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 100,
+      damping: 15,
+    },
+  },
 };
 
+// Orchestrated staggering settings for badges grid
 const badgeContainerVariants: Variants = {
   hidden: { opacity: 0 },
   visible: {
     opacity: 1,
-    transition: { staggerChildren: 0.06 },
+    transition: {
+      staggerChildren: 0.05, // Rapid, satisfying cascade effect
+    },
   },
 };
 
+// Micro-spring scale for single badge items on entry
 const badgeVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.92 },
-  visible: { opacity: 1, scale: 1 },
+  hidden: { opacity: 0, scale: 0.8, y: 4 },
+  visible: {
+    opacity: 1,
+    scale: 1,
+    y: 0,
+    transition: {
+      type: "spring",
+      stiffness: 300,
+      damping: 20,
+    },
+  },
   exit: { opacity: 0, scale: 0.8, transition: { duration: 0.15 } },
 };
 

@@ -23,7 +23,6 @@ const styles = StyleSheet.create({
     color: BODY_COLOR,
   },
 
-  // Header
   name: {
     fontSize: 24,
     fontFamily: "Helvetica-Bold",
@@ -59,7 +58,6 @@ const styles = StyleSheet.create({
     marginHorizontal: 6,
   },
 
-  // Sections
   section: { marginTop: 16 },
   sectionHeadingRow: {
     flexDirection: "row",
@@ -85,7 +83,6 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
 
-  // Entries
   entry: { marginBottom: 10 },
   entryHeaderRow: {
     flexDirection: "row",
@@ -128,14 +125,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
 
-  // Summary
   summaryText: {
     fontSize: 10,
     color: BODY_COLOR,
     lineHeight: 1.6,
   },
 
-  // Skills
   skillCategoryRow: { marginBottom: 5, flexDirection: "row", flexWrap: "wrap" },
   skillCategoryLabel: {
     fontSize: 9.5,
@@ -148,7 +143,6 @@ const styles = StyleSheet.create({
     color: BODY_COLOR,
   },
 
-  // Footer
   pageNumber: {
     position: "absolute",
     bottom: 20,
@@ -225,7 +219,6 @@ export function ResumePdfDocument({ data }: ResumePdfDocumentProps) {
   return (
     <Document title={`${fullName || "Resume"} - Resume`}>
       <Page size="A4" style={styles.page} wrap>
-        {/* Header */}
         <View>
           <Text style={styles.name}>{fullName || "Your Name"}</Text>
           {jobTitle ? <Text style={styles.jobTitle}>{jobTitle}</Text> : null}
@@ -242,7 +235,6 @@ export function ResumePdfDocument({ data }: ResumePdfDocumentProps) {
           )}
         </View>
 
-        {/* Summary */}
         {summary ? (
           <View style={styles.section} wrap={false}>
             <SectionHeading>Professional Summary</SectionHeading>
@@ -250,7 +242,6 @@ export function ResumePdfDocument({ data }: ResumePdfDocumentProps) {
           </View>
         ) : null}
 
-        {/* Experience */}
         {experiences.length > 0 && (
           <View style={styles.section}>
             <SectionHeading>Experience</SectionHeading>
@@ -272,7 +263,6 @@ export function ResumePdfDocument({ data }: ResumePdfDocumentProps) {
           </View>
         )}
 
-        {/* Projects */}
         {projects.length > 0 && (
           <View style={styles.section}>
             <SectionHeading>Projects</SectionHeading>
@@ -292,7 +282,6 @@ export function ResumePdfDocument({ data }: ResumePdfDocumentProps) {
           </View>
         )}
 
-        {/* Education */}
         {educations.length > 0 && (
           <View style={styles.section}>
             <SectionHeading>Education</SectionHeading>
@@ -317,7 +306,6 @@ export function ResumePdfDocument({ data }: ResumePdfDocumentProps) {
           </View>
         )}
 
-        {/* Skills */}
         {Object.keys(skillsByCategory).length > 0 && (
           <View style={styles.section} wrap={false}>
             <SectionHeading>Skills</SectionHeading>
@@ -330,7 +318,6 @@ export function ResumePdfDocument({ data }: ResumePdfDocumentProps) {
           </View>
         )}
 
-        {/* Certifications */}
         {certifications.length > 0 && (
           <View style={styles.section} wrap={false}>
             <SectionHeading>Certifications</SectionHeading>
@@ -346,7 +333,6 @@ export function ResumePdfDocument({ data }: ResumePdfDocumentProps) {
           </View>
         )}
 
-        {/* Languages */}
         {languages.length > 0 && (
           <View style={styles.section} wrap={false}>
             <SectionHeading>Languages</SectionHeading>

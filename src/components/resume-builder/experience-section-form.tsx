@@ -16,6 +16,7 @@ import { SortableContext, verticalListSortingStrategy } from "@dnd-kit/sortable"
 import {
   saveExperiencesSchema,
   type SaveExperiencesInput,
+  type SaveExperiencesFormValues,
   type ExperienceEntry,
 } from "@/schemas/experience.schema";
 import { saveExperiences } from "@/actions/experience.actions";
@@ -47,7 +48,7 @@ export function ExperienceSectionForm({
   defaultExperiences,
   onValuesChange,
 }: ExperienceSectionFormProps) {
-  const form = useForm<SaveExperiencesInput>({
+  const form = useForm<SaveExperiencesFormValues>({
     resolver: zodResolver(saveExperiencesSchema),
     defaultValues: { resumeId, experiences: defaultExperiences },
     mode: "onBlur",
@@ -62,11 +63,11 @@ export function ExperienceSectionForm({
   const watchedExperiences = form.watch("experiences");
 
   useEffect(() => {
-    onValuesChange(watchedExperiences);
+    onValuesChange((watchedExperiences ?? []) as ExperienceEntry[]);
   }, [watchedExperiences, onValuesChange]);
 
   const autosaveStatus = useDebouncedAutosave(
-    form.watch(),
+    form.watch() as SaveExperiencesInput,
     saveExperiences,
     form.formState.isValid
   );
@@ -122,7 +123,7 @@ export function ExperienceSectionForm({
                     id={field.fieldKey}
                     control={form.control}
                     index={index}
-                    isCurrent={watchedExperiences[index]?.isCurrent ?? false}
+                    isCurrent={watchedExperiences?.[index]?.isCurrent ?? false}
                     onRemove={() => remove(index)}
                   />
                 </div>

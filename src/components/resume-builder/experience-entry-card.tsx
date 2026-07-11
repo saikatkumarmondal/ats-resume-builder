@@ -3,7 +3,7 @@
 import { GripVertical, Trash2 } from "lucide-react";
 import { MonthYearPicker } from "@/components/shared/month-year-picker";
 import type { Control } from "react-hook-form";
-import type { SaveExperiencesInput } from "@/schemas/experience.schema";
+import type { SaveExperiencesFormValues } from "@/schemas/experience.schema";
 import { EMPLOYMENT_TYPE_LABELS } from "@/config/employment-type.config";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,7 +26,7 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ExperienceEntryCardProps {
-  control: Control<SaveExperiencesInput>;
+  control: Control<SaveExperiencesFormValues>;
   index: number;
   isCurrent: boolean;
   onRemove: () => void;

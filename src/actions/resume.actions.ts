@@ -112,7 +112,12 @@ export async function duplicateResume(resumeId: string): Promise<ActionResult> {
       title: `${original.title} (Copy)`,
       templateSlug: original.templateSlug,
       personalInfo: original.personalInfo
-        ? { create: { ...original.personalInfo, id: undefined, resumeId: undefined } }
+        ? {
+            create: (() => {
+              const { id, resumeId: _r, ...rest } = original.personalInfo;
+              return rest;
+            })(),
+          }
         : undefined,
       experiences: {
         create: original.experiences.map(({ id, resumeId: _r, ...rest }) => rest),
@@ -180,6 +185,7 @@ export async function updateResumeTemplate(
   revalidatePath(`/resumes/${resumeId}/edit`);
   return { success: true };
 }
+
 export async function getResumeForPrint(resumeId: string) {
   const userId = await requireUserId();
 

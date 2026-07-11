@@ -3,7 +3,7 @@
 import { Trash2, X } from "lucide-react";
 import { useState, type KeyboardEvent } from "react";
 import type { Control, UseFormSetValue } from "react-hook-form";
-import type { SaveProjectsInput } from "@/schemas/project.schema";
+import type { SaveProjectsFormValues } from "@/schemas/project.schema";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
@@ -18,8 +18,8 @@ import {
 import { Card, CardContent } from "@/components/ui/card";
 
 interface ProjectEntryCardProps {
-  control: Control<SaveProjectsInput>;
-  setValue: UseFormSetValue<SaveProjectsInput>;
+  control: Control<SaveProjectsFormValues>;
+  setValue: UseFormSetValue<SaveProjectsFormValues>;
   index: number;
   techStack: string[];
   onRemove: () => void;
