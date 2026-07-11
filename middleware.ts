@@ -1,5 +1,10 @@
+import NextAuth from "next-auth";
 import { NextResponse } from "next/server";
-import { auth } from "@/lib/auth";
+import { authConfig } from "@/lib/auth.config";
+
+// A lightweight NextAuth instance built only from the Edge-safe config —
+// no Prisma, no bcrypt — so middleware stays within the Edge runtime.
+const { auth } = NextAuth(authConfig);
 
 const PROTECTED_ROUTE_PREFIXES = [
   "/dashboard",
